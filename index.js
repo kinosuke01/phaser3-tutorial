@@ -8,6 +8,17 @@ var config = {
     width: 800,
     height: 600,
 
+    // アーケード物理プラグイン
+    // シーンに属して、物理シミュレーションを管理する
+    // https://photonstorm.github.io/phaser3-docs/Phaser.Physics.Arcade.ArcadePhysics.html
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false,
+        },
+    },
+
     // シーンごとに呼ぶ関数を設定
     scene: {
         preload: preload,
@@ -35,7 +46,24 @@ function preload() {
 }
 
 function create() {
+    // add.imageで現在のシーンの表示リストに追加
+    // 画像の中心の座標を指定する
+    // skyの画像サイズは800x600
     this.add.image(400, 300, 'sky');
+
+    // 記述した順に上に表示されていく
+    // this.add.image(400, 300, 'star');
+
+    // 静的な物理オブジェクトのグループ
+    platforms = this.physics.add.staticGroup();
+
+    // ゲームオブジェクトの追加
+    // TODO
+    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+
+    platforms.create(600, 400, 'ground');
+    platforms.create(50, 250, 'ground');
+    platforms.create(750, 220, 'ground');
 }
 
 function update() {

@@ -55,10 +55,14 @@ function create() {
     // this.add.image(400, 300, 'star');
 
     // 静的な物理オブジェクトのグループ
+    // 類似したオブジェクトをグループ化することで、1つのユニットとして制御できる
     platforms = this.physics.add.staticGroup();
 
     // ゲームオブジェクトの追加
-    // TODO
+    // 元画像のサイズは 400x568
+    // 中心座標は 400x568
+    // setScale(2)で縦横幅を2倍にすることで、800x1316を400x568の位置に配置となる
+    // スケーリングした際は、refreshBodyが必要(なぜ？)
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
     platforms.create(600, 400, 'ground');

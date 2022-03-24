@@ -27,6 +27,8 @@ var config = {
     }
 };
 
+var player;
+var platforms;
 var game = new Phaser.Game(config);
 
 function preload() {
@@ -68,6 +70,40 @@ function create() {
     platforms.create(600, 400, 'ground');
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
+
+    // 100x450に配置されたスプライトを作成
+    player = this.physics.add.sprite(100, 450, 'dude');
+
+    // バウンス値。ジャンプ後の着地で若干跳ね返る。
+    player.setBounce(0.2);
+
+    // スプライトをゲームディメンション内に閉じ込めるか
+    // デフォルト=true
+    player.setCollideWorldBounds(true);
+
+    // 左向きのアニメーションを定義
+    this.anims.create({
+        key: 'left',
+        // spriteの0〜3のフレームを使用する
+        frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
+        frameRate: 10, // 1秒あたり10フレームで実行
+        repeat: -1,    // -1 = アニメーションループ設定
+    });
+
+    // 正面のアニメーションを定義
+    this.anims.create({
+        key: 'turn',
+        frames: [ {key: 'dude', frame: 4}],
+        frameRate: 20,
+    });
+
+    // 右向きのアニメーションを定義
+    this.anims.create({
+        key: 'right',
+        frame: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
+        frameRate: 10,
+        repeat: -1,
+    });
 }
 
 function update() {

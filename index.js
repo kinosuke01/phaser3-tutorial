@@ -8,13 +8,14 @@ var config = {
     width: 800,
     height: 600,
 
-    // アーケード物理プラグイン
+    // Arcade物理システム
     // シーンに属して、物理シミュレーションを管理する
+    // 他にImpactPhysicsなどがある
     // https://photonstorm.github.io/phaser3-docs/Phaser.Physics.Arcade.ArcadePhysics.html
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
+            gravity: { y: 300 }, // 重力加速度の設定
             debug: false,
         },
     },
@@ -30,6 +31,7 @@ var config = {
 var player;
 var platforms;
 var game = new Phaser.Game(config);
+var cursors;
 
 function preload() {
     // 画像読み込み
@@ -81,6 +83,13 @@ function create() {
     // デフォルト=true
     player.setCollideWorldBounds(true);
 
+    // スプライトごとの重力加速度の設定
+    player.body.setGravityY(300);
+
+    // スプライトと地面の衝突判定
+    // 静止体とスプライトが衝突した場合は止まる
+    this.physics.add.collider(player, platforms);
+
     // 左向きのアニメーションを定義
     this.anims.create({
         key: 'left',
@@ -104,7 +113,26 @@ function create() {
         frameRate: 10,
         repeat: -1,
     });
+
+    // カーソルオブジェクト
+    // これに上下左右のプロパティが設定される
+    cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update() {
+    if (cursors.left.isDown) {
+        player.setVelocityX(-160);
+        // player.anims.play('left', true);
+    } else if (cursors.right.isDown) {
+        player.setVelocityX(160);
+        // player.anims.play('right', true);
+    } else {
+        player.setVelocityX(0);
+        // player.amins.play('turn');
+    }
+
+    // 上が押されている かつ 地面に接しているか
+    if (cursors.up.isDown && player.body.touching.down) {
+        player.setVelocityY(-330);
+    }
 }

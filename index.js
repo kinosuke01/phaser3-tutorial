@@ -32,6 +32,8 @@ var player;
 var platforms;
 var game = new Phaser.Game(config);
 var cursors;
+var score = 0;
+var scoreText;
 
 function preload() {
     // 画像読み込み
@@ -136,8 +138,15 @@ function create() {
     // 星とプレイヤーが重なったら、星を非表示にする
     let collectStar = function(player, star) {
         star.disableBody(true, true);
+
+        // スコア追加
+        score += 10;
+        scoreText.setText('Score: ' + score);
     }
     this.physics.add.overlap(player, stars, collectStar, null, this);
+
+    // スコアを表示するテキストオブジェクト
+    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000'});
 }
 
 function update() {

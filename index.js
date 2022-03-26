@@ -34,6 +34,8 @@ var game = new Phaser.Game(config);
 var cursors;
 var score = 0;
 var scoreText;
+var stars;
+var bombs;
 
 function preload() {
     // 画像読み込み
@@ -150,6 +152,7 @@ function create() {
                 child.enableBody(true, child.x, 0, true, true);
             });
 
+            // 爆弾を生成
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             var bomb = bombs.create(x, 16, 'bomb');
             bomb.setBounce(1);
@@ -165,6 +168,8 @@ function create() {
     // 爆弾
     bombs = this.physics.add.group();
     this.physics.add.collider(bombs, platforms);
+
+    // プレイヤーと爆弾の衝突時処理
     let hitBomb = function(player, bombs) {
         this.physics.pause();
         player.setTint(0xff0000);

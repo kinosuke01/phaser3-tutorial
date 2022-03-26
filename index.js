@@ -117,6 +117,27 @@ function create() {
     // カーソルオブジェクト
     // これに上下左右のプロパティが設定される
     cursors = this.input.keyboard.createCursorKeys();
+
+    // 星オブジェクトの追加
+    stars = this.physics.add.group({
+        key: 'star',  // starイメージと紐付け
+        repeat: 11,   // 自動で1個できる+11回=12個
+        setXY: {x: 12, y: 0, stepX: 70}, // 最初の1個は12x0に配置, 2個目は(12+70)x0に配置...
+    });
+    // 全部の星に繰り返し処理
+    stars.children.iterate(function(child) {
+        // 0.4~0.8のランダムなバウンス値をセット
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    })
+
+    // 星オブジェクトと地面の衝突設定
+    this.physics.add.collider(stars, platforms);
+
+    // 星とプレイヤーが重なったら、星を非表示にする
+    let collectStar = function(player, star) {
+        star.disableBody(true, true);
+    }
+    this.physics.add.overlap(player, stars, collectStar, null, this);
 }
 
 function update() {

@@ -142,11 +142,36 @@ function create() {
         // スコア追加
         score += 10;
         scoreText.setText('Score: ' + score);
+
+        // 星が0になったら
+        if (stars.countActive(true) === 0) {
+            // 星を復活
+            stars.children.iterate(function(child) {
+                child.enableBody(true, child.x, 0, true, true);
+            });
+
+            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+            var bomb = bombs.create(x, 16, 'bomb');
+            bomb.setBounce(1);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+        }
     }
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     // スコアを表示するテキストオブジェクト
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000'});
+
+    // 爆弾
+    bombs = this.physics.add.group();
+    this.physics.add.collider(bombs, platforms);
+    let hitBomb = function(player, bombs) {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+        gameOver = true;
+    }
+    this.physics.add.collider(player, bombs, hitBomb, null, this);
 }
 
 function update() {

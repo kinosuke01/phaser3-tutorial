@@ -84,7 +84,7 @@ function create() {
     player.setCollideWorldBounds(true);
 
     // スプライトごとの重力加速度の設定
-    player.body.setGravityY(300);
+    // player.body.setGravityY(300);
 
     // スプライトと地面の衝突判定
     // 静止体とスプライトが衝突した場合は止まる
@@ -109,7 +109,7 @@ function create() {
     // 右向きのアニメーションを定義
     this.anims.create({
         key: 'right',
-        frame: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
+        frames: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
         frameRate: 10,
         repeat: -1,
     });
@@ -122,13 +122,13 @@ function create() {
 function update() {
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
-        // player.anims.play('left', true);
+        player.anims.play('left', true);
     } else if (cursors.right.isDown) {
         player.setVelocityX(160);
-        // player.anims.play('right', true);
+        player.anims.play('right', true);
     } else {
         player.setVelocityX(0);
-        // player.amins.play('turn');
+        player.anims.play('turn');
     }
 
     // 上が押されている かつ 地面に接しているか

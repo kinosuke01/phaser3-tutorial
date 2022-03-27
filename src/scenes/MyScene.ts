@@ -1,10 +1,10 @@
 import * as Phaser from "phaser";
 
 export default class MyScene extends Phaser.Scene {
-    player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody | null = null;
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     score: number = 0;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    gameOver: boolean;
+    gameOver: boolean = false;
 
     constructor() {
         super({ key: 'myscene' });
@@ -102,17 +102,22 @@ export default class MyScene extends Phaser.Scene {
             setXY: {x: 12, y: 0, stepX: 70}, // 最初の1個は12x0に配置, 2個目は(12+70)x0に配置...
         });
         // 全部の星に繰り返し処理
-        stars.children.iterate(function(child: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
+        stars.children.iterate(function(child: Phaser.GameObjects.GameObject) {
             // 0.4~0.8のランダムなバウンス値をセット
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            // 型アサーションしないとsetBounceが使えない
+            (child as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody).setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         })
     
         // 星オブジェクトと地面の衝突設定
         this.physics.add.collider(stars, platforms);
     
         // 星とプレイヤーが重なったら、星を非表示にする
-        let collectStar = function(player, star) {
-            star.disableBody(true, true);
+        let collectStar = (player: Phaser.Types.Physics.Arcade.GameObjectWithBody, star: Phaser.Types.Physics.Arcade.GameObjectWithBody) => {
+            // 型アサーションしないと各種メソッド使えない
+            const _star = (star as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody);
+            const _player = (player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody);
+
+            _star.disableBody(true, true);
     
             // スコア追加
             this.score += 10;
@@ -121,20 +126,21 @@ export default class MyScene extends Phaser.Scene {
             // 星が0になったら
             if (stars.countActive(true) === 0) {
                 // 星を復活
-                stars.children.iterate(function(child: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
-                    child.enableBody(true, child.x, 0, true, true);
+                stars.children.iterate(function(child: Phaser.GameObjects.GameObject) {
+                    let _child = (child as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody);
+                    _child.enableBody(true, _child.x, 0, true, true);
                 });
     
                 // 爆弾を生成
-                var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+                var x = (_player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
                 var bomb = bombs.create(x, 16, 'bomb');
                 bomb.setBounce(1);
                 bomb.setCollideWorldBounds(true);
                 bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
             }
         }
-        this.physics.add.overlap(this.player, stars, collectStar, null, this);
-    
+        this.physics.add.overlap(this.player, stars, collectStar, undefined, this);
+
         // スコアを表示するテキストオブジェクト
         const scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000'});
     
@@ -143,16 +149,24 @@ export default class MyScene extends Phaser.Scene {
         this.physics.add.collider(bombs, platforms);
     
         // プレイヤーと爆弾の衝突時処理
-        let hitBomb = function(player, bombs) {
+        let hitBomb = (player: Phaser.Types.Physics.Arcade.GameObjectWithBody, bombs: Phaser.Types.Physics.Arcade.GameObjectWithBody) => {
+            let _player = (player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody);
             this.physics.pause();
-            player.setTint(0xff0000);
-            player.anims.play('turn');
+            _player.setTint(0xff0000);
+            _player.anims.play('turn');
             this.gameOver = true;
         }
-        this.physics.add.collider(this.player, bombs, hitBomb, null, this);
+        this.physics.add.collider(this.player, bombs, hitBomb, undefined, this);
     }
 
     update() {
+        if (!this.cursors)  {
+            throw new Error('cursor is null');
+        }
+        if (!this.player) {
+            throw new Error('player is null');
+        }
+
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-160);
             this.player.anims.play('left', true);

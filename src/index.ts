@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 // ゲームの設定
 var config = {
     // WebGLが使用可能であれば使う

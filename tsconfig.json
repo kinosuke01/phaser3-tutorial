@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "module": "ES2015",         // ES Modulesとして出力
+    "moduleResolution": "node", // 非相対パスを指定したとき、インポート対象をnode_modulesから探す
+  }
+}

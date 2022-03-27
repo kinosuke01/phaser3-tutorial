@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 import MyScene from './scenes/MyScene';
 
 // ゲームの設定
-var config = {
+const config: Phaser.Types.Core.GameConfig = {
     // WebGLが使用可能であれば使う
     // 使用不可であればCanvasにフォールバックする
     type: Phaser.AUTO,

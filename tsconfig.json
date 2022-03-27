@@ -4,6 +4,6 @@
     "sourceMap": true,
     "target": "esnext",
     "module": "ES2015",
-    "moduleResolution": "node", 
+    "moduleResolution": "node"
   }
 }
